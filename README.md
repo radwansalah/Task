@@ -14,6 +14,7 @@ API URL: https://www.fruityvice.com/api/
 * Open Terminal and Change the directory to the project
 * To Run the server/application please use the following command:
     * dotnet run
+    * and you can test it using this URL: http://localhost:5111/api/fruits/healthiest?minSugar=10&maxSugar=30
 * To Run the unit tests please use the following command
     * dotnet test
 
