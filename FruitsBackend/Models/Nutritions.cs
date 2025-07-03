@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace FruitsBackend.Models
 {
     public class Nutritions
@@ -12,6 +14,7 @@ namespace FruitsBackend.Models
 
         public double Protein { get; set; }
 
+        [JsonIgnore]
         public double HealthScore => Protein * 2 + Carbohydrates * 0.5 - (Sugar + Fat * 2);
     }
 }

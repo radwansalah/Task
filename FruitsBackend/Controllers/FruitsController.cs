@@ -26,8 +26,13 @@ public class FruitsController : ControllerBase
             return value;
         }
 
-        var fruitResponse = await _fruitsService.GetFruitesByMinAndMaxSugar(minSugar.Value, maxSugar.Value);   // minSugar and maxSugar are not null here for sure, we checked those param for null inside CheckParams method.
-        (flowControl, value) = CheckFruitesStatusCode(minSugar, maxSugar, fruitResponse);
+        // minSugar and maxSugar are not null here for sure, we checked those param for null inside CheckParams method, I did the following to remove warnings, 
+        // but also it will not hart since we are not sure if anyone will change the code inside CheckParams method.
+        int minSugarValue = minSugar ?? throw new Exception("minSugar can't be null here");
+        int maxSugarValue = maxSugar ?? throw new Exception("maxSugar can't be null here");
+
+        var fruitResponse = await _fruitsService.GetFruitesByMinAndMaxSugar(minSugarValue, maxSugarValue);
+        (flowControl, value) = CheckFruitesStatusCode(minSugarValue, maxSugarValue, fruitResponse);
         if (!flowControl)
         {
             return value;
@@ -43,7 +48,7 @@ public class FruitsController : ControllerBase
         });
     }
 
-    private (bool flowControl, IActionResult value) CheckFruitesStatusCode(int? minSugar, int? maxSugar, Helpers.FruitResponse fruitResponse)
+    private (bool flowControl, IActionResult value) CheckFruitesStatusCode(int minSugar, int maxSugar, Helpers.FruitResponse fruitResponse)
     {
         if (fruitResponse.StatusCode == StatusCodes.Status404NotFound)
         {

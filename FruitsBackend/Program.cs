@@ -31,6 +31,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// If I have more time, I will add a custom error handler middleware
 app.UseHttpsRedirection();
 app.MapControllers();
 
