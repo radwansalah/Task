@@ -11,6 +11,7 @@
     using FruitsBackend.Models;
     using FruitsBackend.Services;
     using FruitsBackend.Helpers;
+    using System.Text.Json;
 
     public class FruitsControllerTests
     {
@@ -107,8 +108,9 @@
         {
             var fruits = new List<Fruit>
             {
-                new Fruit { Name = "Banana", Nutritions = new Nutritions { Protein = 1, Carbohydrates = 22, Sugar = 17.2, Fat = 0.2 } },
-                new Fruit { Name = "Apple", Nutritions = new Nutritions { Protein = 0.3, Carbohydrates = 14, Sugar = 10, Fat = 0.2 } }
+                new Fruit { Name = "Banana", Nutritions = new Nutritions { Protein = 1, Carbohydrates = 20, Sugar = 5, Fat = 0.2 } },
+                new Fruit { Name = "Apple", Nutritions = new Nutritions { Protein = 0.3, Carbohydrates = 14, Sugar = 10, Fat = 0.2 } },
+                new Fruit { Name = "Tomato", Nutritions = new Nutritions { Protein = 0.9, Carbohydrates = 4, Sugar = 3, Fat = 0.2 } },
             };
 
             _mockService.Setup(s => s.GetFruitesByMinAndMaxSugar(0, 100)).ReturnsAsync(new FruitResponse
@@ -119,8 +121,20 @@
 
             var result = await _controller.Healthiest(0, 100);
 
+            // Important: It is better to use Model for API Response and deserialzie the result to it, but for simplicity, we are using anonymous object and JsonDocument here.
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.NotNull(okResult.Value);
+            var json = JsonSerializer.Serialize(okResult.Value);
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+            var data = root.GetProperty("data").EnumerateArray().ToList();
+
+            Assert.Equal(3, data.Count);
+
+            Assert.Equal("Banana", data[0].GetProperty("Name").GetString());
+            Assert.Equal(6.6, data[0].GetProperty("Score").GetDouble(), 1);
+
+            Assert.Equal("Tomato", data[2].GetProperty("Name").GetString());
+            Assert.Equal(0.4, data[2].GetProperty("Score").GetDouble(), 1);
         }
     }
 }
